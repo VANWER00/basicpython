@@ -1,3 +1,4 @@
+import pickle
 #인벤토리
 
 def add_item(item, amount, t_inventory):
@@ -58,13 +59,31 @@ def use_item():
             print("> 잘못된 번호를 입력하셨습니다.")
 
 #캐릭터
+'''
+try:
+    load_file = open("game_save.p", "rb")
+    character = pickle.load(load_file)
+    load_file.close()
+    print(">저장된 파일을 읽어왔습니다.")
+except:
+    print(">읽어올 파일이 없습니다.")
+    character = {}
+'''
+import os
 
-character = {}
+if os.path.isfile("game_save.p"):
+    load_file = open("game_save.p", "rb")
+    character = pickle.load(load_file)
+    load_file.close()
+    print(">저장된 파일을 읽어왔습니다.")
+else:
+    print(">읽어올 파일이 없습니다.")
+    character = {}
 
 select_character = None
 
 def new_character(name, t_character):
-    if name in t_character:
+    if check_character(name, t_character):
         print("이미 존재하는 이름입니다.")
     else:
         inventory = {}
@@ -74,7 +93,7 @@ def check_character(name, t_character):
     return name in t_character
 
 def print_characterMenu():
-    print("0. 끝내기")
+    print("0. 저장하고 끝내기")
     print("1. 캐릭터 추가")
     print("2. 캐릭터 이름출력")
     print("3. 캐릭터 선택")
@@ -84,6 +103,10 @@ while True:
     print_characterMenu()
     option = int(input("> 메뉴를 선택하세요. )"))
     if option == 0:
+        save_file = open("game_save.p", "wb")
+        pickle.dump(character, save_file)
+        save_file.close()
+        print(">게임 내용이 저장되었습니다.")
         print("> 종료합니다.")
         break
     elif option == 1:
@@ -98,7 +121,7 @@ while True:
         print("#########################")
     elif option == 3:
         temp_name = input("> 선택할 캐릭터의 이름을 입력하세요. )")
-        if check_character(temp_name, t_character):
+        if check_character(temp_name, character):
             select_character = temp_name
             print(select_character+"이 선택되었습니다.")
         else:
